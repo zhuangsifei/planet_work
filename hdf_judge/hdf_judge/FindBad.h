@@ -1,3 +1,10 @@
+/*
+文件：FindBad.h ，类FindBad的头文件
+时间：2013年10月
+作者：ZYS
+版本：Version：1.0
+功能：找出每个文本中各种词汇的数目来做分析
+*/
 #pragma once
 #include <Windows.h>
 #include <string>

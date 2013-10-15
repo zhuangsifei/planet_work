@@ -7,27 +7,50 @@
 */
 #include "SeparateTerm.h"
 
-
-SeparateTerm::SeparateTerm(void)
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SeparateTerm(LPCSTR pDicPath,bool bLoad)
+// 功能: 分词系统构造函数
+//---------------------------------------------------------------------------------
+SeparateTerm::SeparateTerm(LPCSTR pDicPath,bool bLoad)
 {
-	std::cout<<"This is using the system dictionary\n";
-	m_Save = Load;
-	m_Svm = Train;
+	m_pDicPath = pDicPath;
+	m_bLoad    = bLoad;
+
+	SepInit();
+	if(m_bLoad)
+	{
+		LoadDic();
+	}
+	else
+	{
+		std::cout<<"This is using the system's dictionary\n";
+	}
 }
 
-SeparateTerm::SeparateTerm(char *path)
-{
-	m_DicPath = path;
-	m_Save = Load;
-	m_Svm = Train;
-	std::cout<<"This is using the use's dictionary\n";
-}
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SeparateTerm(const SeparateTerm& copy)
+// 功能: 复制构造函数
+//---------------------------------------------------------------------------------
 SeparateTerm::SeparateTerm(const SeparateTerm& copy)
 {
-	m_DicPath = new char[strlen(copy.m_DicPath) + 1];
-	strcpy(m_DicPath,copy.m_DicPath);
+	m_bLoad  = copy.m_bLoad;
+	m_pDicPath = new const char[strlen(copy.m_pDicPath) + 1];
+	if (m_pDicPath == NULL)
+	{
+		std::cout<<"No enough space for the copying\n";
+	}
+	else
+	{
+		strcpy(const_cast<char*>(m_pDicPath),copy.m_pDicPath);
+	}
 }
-//分词系统初始化
+
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SepInit()
+// 功能: 初始化分词系统
+//---------------------------------------------------------------------------------
 void SeparateTerm::SepInit()
 {
 	if(!ICTCLAS_Init(".\\API"))
@@ -40,9 +63,15 @@ void SeparateTerm::SepInit()
 		cout<<"ICTCLAS Init OK!\n";
 	}
 }
+
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::LoadDic()
+// 功能: 加载词典 
+//---------------------------------------------------------------------------------
 void SeparateTerm::LoadDic()
 {
-	unsigned int nItems= ICTCLAS_ImportUserDictFile(m_DicPath,CODE_TYPE_UNKNOWN);
+	unsigned int nItems= ICTCLAS_ImportUserDictFile(m_pDicPath,CODE_TYPE_UNKNOWN);
 	if(nItems)
 	{
 		std::cout<<"Load dictionary successfully!\n";
@@ -63,7 +92,32 @@ void SeparateTerm::LoadDic()
 	}
 
 }
-void SeparateTerm::SepSave(LPCSTR path0,LPCSTR path1)
+
+void SeparateTerm::SetLoad(bool bLoad)
+{
+	m_bLoad = bLoad;
+}
+
+bool SeparateTerm::GetLoad()
+{
+	return m_bLoad;
+}
+
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SingleSeparate(LPCSTR pSource,LPCSTR pDest)
+// 功能: 把单独一个文本分词后保存在另一个文本中
+//---------------------------------------------------------------------------------
+void SeparateTerm::SingleSeparate(LPCSTR pSource,LPCSTR pDest)
+{
+	ICTCLAS_FileProcess(pSource,pDest,CODE_TYPE_UNKNOWN,0);
+}
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::BatchSeparate(LPCSTR pSource,LPCSTR pDest)
+// 功能: 把一个文件夹中的全部文本分词后保存到另一个文件夹
+//---------------------------------------------------------------------------------
+void SeparateTerm::BatchSeparate(LPCSTR pSource,LPCSTR pDest)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hError;
@@ -71,9 +125,8 @@ void SeparateTerm::SepSave(LPCSTR path0,LPCSTR path1)
 	char FilePathName[MAX_PATH];
 	char FullPathName[MAX_PATH];
 	char DestPathName[MAX_PATH];
-	
 
-	strcpy(FilePathName,path0);
+	strcpy(FilePathName,pSource);
 	strcat(FilePathName,"\\*.*");   //加*.*是为了获取所有文件的所有格式
 	hError = FindFirstFile(FilePathName,&findData);
 	if(hError == INVALID_HANDLE_VALUE)
@@ -87,28 +140,49 @@ void SeparateTerm::SepSave(LPCSTR path0,LPCSTR path1)
 		{
 			continue;
 		}
-		sprintf(FullPathName,"%s\\%s",path0,findData.cFileName);
-		sprintf(DestPathName,"%s\\%s",path1,findData.cFileName);
+		sprintf(FullPathName,"%s\\%s",pSource,findData.cFileName);
+		sprintf(DestPathName,"%s\\%s",pDest,findData.cFileName);
 		
 		ICTCLAS_FileProcess(FullPathName,DestPathName,CODE_TYPE_UNKNOWN,0);
 	}
 }
 
-void SeparateTerm::SetDicMode(SaveMode mode)
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SingleClear(LPCSTR pSource,LPCSTR pDest)
+// 功能：把一个分词后的文本做一些处理，比如去除标点，去除非汉语。（功能可以增加）
+//---------------------------------------------------------------------------------
+void SeparateTerm::SingleClearWord(LPCSTR pSource,LPCSTR pDest)
 {
-	m_Save = mode;
+	ifstream fin(pSource,ios::in);
+	ofstream fout(pDest,ios::out);
+	string str;
+	int nLength = 0;
+	int i = 0;
+	while (fin.good())
+	{
+		fin>>str;
+		nLength = str.length();
+		for(i = 0; i<nLength;)
+		{
+			if(str[i] < 0)
+				i += 2;
+			else 
+				break;
+		}
+		if( i == nLength )
+			fout<<str<<endl;
+
+	}
 }
-SeparateTerm::SaveMode SeparateTerm::GetDicMode()
+
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SingleClear(LPCSTR pSource,LPCSTR pDest)
+// 功能：把一个分词后的文本做一些处理，比如去除标点，去除非汉语。（功能可以增加）
+//---------------------------------------------------------------------------------
+void BatchClearWord(LPCSTR pSource,LPCSTR pDest )
 {
-	return m_Save;
-}
-void SeparateTerm::SetSvmMode(SvmMode mode)
-{
-	m_Svm = mode;
-}
-SeparateTerm::SvmMode SeparateTerm::GetSvmMode()
-{
-	return m_Svm;
+
 }
 //析构实现分析系统的正常退出
 SeparateTerm::~SeparateTerm(void)

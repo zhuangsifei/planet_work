@@ -17,22 +17,26 @@ using namespace std;
 class SeparateTerm
 {
 public:
-	enum SaveMode{Load,UnLoad};
-	enum SvmMode{Train,Predict};
-	SeparateTerm(void);
-	SeparateTerm(char* path);
-	SeparateTerm(const SeparateTerm& copy);
+	SeparateTerm(LPCSTR pDicPath,bool bLoad);
+	SeparateTerm::SeparateTerm(const SeparateTerm& copy);
+	~SeparateTerm(void);
 	void SepInit();
 	void LoadDic();
+	void SetLoad(bool bLoad);
+	bool GetLoad();
+public:
+	void SingleSeparate(LPCSTR pSource,LPCSTR pDest);
+	void SingleClearWord(LPCSTR pSource,LPCSTR pDest);
+	void BatchSeparate(LPCSTR pSource,LPCSTR pDest);
+	void BatchClearWord(LPCSTR pSource,LPCSTR pDest);
+	
 	void SepSave(LPCSTR path0,LPCSTR path1);
-	void SetDicMode(SaveMode mode);
-	SaveMode GetDicMode();
-	void SetSvmMode(SvmMode mode);
-	SvmMode GetSvmMode();
-	~SeparateTerm(void);
+	
 private:
-	char *m_DicPath;
-	SaveMode m_Save;
-	SvmMode m_Svm;
+	const char* m_pDicPath;
+	bool		m_bLoad;
+
+	
+	
 };
 

@@ -1,3 +1,10 @@
+/*
+文件：FindBad.cpp ，类FindBad的实现文件
+时间：2013年10月
+作者：ZYS
+版本：Version：1.0
+功能：找出每个文本中各种词汇的数目来做分析
+*/
 #include "FindBad.h"
 #include <fstream>
 using namespace std;
@@ -90,7 +97,7 @@ void FindBad::SingleComputeWord(LPCSTR pSource)
 
 		if(m_YideGood.find(str) != m_YideGood.end())
 			++m_NumYideGood;
-		else if(m_YideBad.find(str) != m_YideBad.end() )
+		else if(m_YideBad.find(str) != m_YideBad.end() )     
 			++m_NumYideBad;
 
 		if(m_YishuGood.find(str) != m_YishuGood.end())
