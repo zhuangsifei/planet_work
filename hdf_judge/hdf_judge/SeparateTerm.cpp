@@ -93,11 +93,21 @@ void SeparateTerm::LoadDic()
 
 }
 
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::SetLoad()
+// 功能: 设置是否加载用户词典
+//---------------------------------------------------------------------------------
 void SeparateTerm::SetLoad(bool bLoad)
 {
 	m_bLoad = bLoad;
 }
 
+
+//---------------------------------------------------------------------------------
+// 名字: SeparateTerm::GetLoad()
+// 功能: 获取用户词典加载模式
+//---------------------------------------------------------------------------------
 bool SeparateTerm::GetLoad()
 {
 	return m_bLoad;
@@ -171,8 +181,9 @@ void SeparateTerm::SingleClearWord(LPCSTR pSource,LPCSTR pDest)
 		}
 		if( i == nLength )
 			fout<<str<<endl;
-
 	}
+	fin.close();
+	fout.close();
 }
 
 
@@ -180,8 +191,32 @@ void SeparateTerm::SingleClearWord(LPCSTR pSource,LPCSTR pDest)
 // 名字: SeparateTerm::SingleClear(LPCSTR pSource,LPCSTR pDest)
 // 功能：把一个分词后的文本做一些处理，比如去除标点，去除非汉语。（功能可以增加）
 //---------------------------------------------------------------------------------
-void BatchClearWord(LPCSTR pSource,LPCSTR pDest )
+void SeparateTerm::BatchClearWord(LPCSTR pSource,LPCSTR pDest )
 {
+	WIN32_FIND_DATA findData;
+	HANDLE hError = NULL;
+	char FilePathName[MAX_PATH] = {'\0'};
+	char FullPathName[MAX_PATH] = {'\0'};
+	char DestPathName[MAX_PATH] = {'\0'};
+
+	strcpy(FilePathName,pSource);
+	strcat(FilePathName,"\\*.*");
+	hError = FindFirstFile(FilePathName,&findData);
+	if (hError == INVALID_HANDLE_VALUE)
+	{
+		std::cout<<"Find the first file failed when doing batchClear\n";
+		return;
+	}
+
+	while( ::FindNextFile(hError,&findData) )
+	{
+		if (strcmp(findData.cFileName,".") == 0 || strcmp(findData.cFileName,"..") ==0)
+			continue;
+		sprintf(FullPathName,"%s\\%s",pSource,findData.cFileName);
+		sprintf(DestPathName,"%s\\%s",pDest,findData.cFileName);
+		SingleClearWord(FullPathName,DestPathName);
+	}
+ 
 
 }
 //析构实现分析系统的正常退出
