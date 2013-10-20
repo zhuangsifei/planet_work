@@ -24,6 +24,9 @@ public:
 	bool LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QString path1,QString path2);
 	//void UseTableModify(QSqlDatabase db,QString table,FindKey &FindWords,LPCSTR upath1,LPCSTR spath2);
 	bool UpdateRecord(QSqlDatabase db,QString table,map<string,int,bool (*)(string,string)> KindMap);
+
+	bool LoadRecordInfile(QSqlQuery query,QString pDest,int nNum = 0);
+	bool LoadMarkedRecordInfile(QSqlQuery query,QString pDest,int nMarked);
 	~QtConnectMysql(void);
 private:
 	QString	m_HostName;

@@ -3,12 +3,16 @@
 QtConnectMysql::QtConnectMysql(void)
 {
 	m_SQL	   = "QMYSQL";
-	m_HostName = "192.168.3.62";
+	/*m_HostName = "192.168.3.62";
 	m_Port	   = 3306;
 	m_UserName = "root";
 	m_PassWord ="dev";
-	m_DataBase ="planet";
-
+	m_DataBase ="planet";*/
+	m_HostName = "localhost";
+	m_Port     = 3306;
+	m_UserName = "root";
+	m_PassWord = "rwxddd";
+	m_DataBase = "planet";
 }
 
 QSqlDatabase QtConnectMysql::getDataDase() const
@@ -16,6 +20,11 @@ QSqlDatabase QtConnectMysql::getDataDase() const
 	return m_db;
 }
 
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::ShowDriver
+// 功能: 显示数据库中的驱动dll
+//---------------------------------------------------------------------------------
 void QtConnectMysql::ShowDriver()
 {
     qDebug() << "Available drivers:";  
@@ -25,6 +34,11 @@ void QtConnectMysql::ShowDriver()
     qDebug() << "End";  
 }
 
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::Connect
+// 功能: 连接数据库
+//---------------------------------------------------------------------------------
 bool QtConnectMysql::Connect()
 {
 	m_db = QSqlDatabase::addDatabase(m_SQL);
@@ -46,6 +60,11 @@ bool QtConnectMysql::Connect()
 
 }
 
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::TestData
+// 功能: 测试数据库能否正常读写
+//---------------------------------------------------------------------------------
 void QtConnectMysql::TestData()
 {
 	QSqlQuery query("SELECT * FROM hdf_status WHERE topic_id>0");
@@ -60,6 +79,79 @@ void QtConnectMysql::TestData()
 	std::cout<<cnt;
 }
 
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::LoadRecordInfile
+// 功能: 从数据库读取N条记录写进文本，一个记录一个文本
+//---------------------------------------------------------------------------------
+bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString pDest,int nNum)
+{
+	QTextCodec *code = QTextCodec::codecForName("UTF-8");
+	QString path = "";
+	QString Qstr = "";
+	int fnameNum = query.record().indexOf("id");
+	int fieldNum = query.record().indexOf("content_text");
+
+	if (nNum == 0)
+		nNum = query.size();
+	int i=0;
+	while(query.next() && (i++<nNum) )
+	{
+		path = query.value(fnameNum).toString();
+		Qstr = query.value(fieldNum).toString();
+		path += ".txt";
+		path = pDest + "\\" + path;
+
+		QFile file(path);
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			qDebug()<<"open file failed\n";
+			return false;
+		}
+		QTextStream out(&file);
+		out.setCodec(code);		//set code format
+		out<<Qstr<<endl;
+		file.close();
+	}
+
+	return true;
+}
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::LoadMarkedRecordInfile
+// 功能: 从数据库读取被标记的记录到指定的文件夹
+//---------------------------------------------------------------------------------
+bool QtConnectMysql::LoadMarkedRecordInfile(QSqlQuery query,QString pDest,int nMarked)
+{
+	QTextCodec *code = QTextCodec::codecForName("UTF-8");
+	QString path = "";
+	QString Qstr = "";
+	int fnameNum = query.record().indexOf("id");
+	int fieldNum = query.record().indexOf("text");
+	int kindNum  = query.record().indexOf("kind");
+
+	while( query.next() )
+	{
+		if (query.value(kindNum).toInt() != nMarked)
+			continue;
+		path = query.value(fnameNum).toString();
+		Qstr = query.value(fieldNum).toString();
+		path += ".txt";
+		path = pDest + "\\" + path;
+
+		QFile file(path);
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			qDebug()<<"open file failed\n";
+			return false;
+		}
+		QTextStream out(&file);
+		out.setCodec(code);		//set code format
+		out<<Qstr<<endl;
+		file.close();
+	}
+
+	return true;
+}
 //this function load all the texts in one folder,every record use one .txt file
 bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QString path1,QString path2)
 {
@@ -152,6 +244,10 @@ bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QS
 //	}
 //}
 
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::UpdateRecord
+// 功能: 将最终的判断结果写入表格中
+//---------------------------------------------------------------------------------
 bool QtConnectMysql::UpdateRecord(QSqlDatabase db,QString table,map<string,int,bool (*)(string,string)> KindMap)
 {
 

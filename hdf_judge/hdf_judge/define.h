@@ -13,4 +13,8 @@ extern const char *pYideGood;
 extern const char *pYideBad;
 extern const char *pYishuGood;
 extern const char *pYishuBad;
+
+extern const char *g_pAllPath;
+extern const char *g_pBadPath;
+extern const char *g_pGoodPath;
 #endif
