@@ -23,11 +23,20 @@ extern const int g_LeftWords = 800;
 
 int main(int argc, char *argv[])
 {
+	// 设置字符串的编码方式，这样在转码时也知道从什么码转
+	QTextCodec *code = QTextCodec::codecForName("GBK");
+	QTextCodec::setCodecForCStrings(code);
 	QtConnectMysql Qtcon;
 	Qtcon.ShowDriver();
-	Qtcon.Connect();
+	if ( !Qtcon.Connect() )
+		return 1;
 	
-	QSqlQuery Query("SELECT * FROM hdf_status"); 
-	Qtcon.LoadRecordInfile(Query,g_pAllPath,5000);
+	QString QSelect("SELECT * FROM hdf_status WHERE effect = '很满意' AND manner = '很满意'");
+	QSqlQuery QueryGood(QSelect); 
+	Qtcon.LoadRecordInfile(QueryGood,g_pGoodPath,5000);
+	
+	QSelect = "SELECT * FROM hdf_status WHERE effect = '不满意' AND manner = '不满意'";
+	QSqlQuery QueryBad(QSelect);
+	Qtcon.LoadRecordInfile(QueryBad,g_pBadPath,5000);
 
 }

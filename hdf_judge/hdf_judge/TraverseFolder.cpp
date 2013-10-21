@@ -255,6 +255,7 @@ bool TraverseFolder::DeleteFolder(LPCSTR path)
 	}
 	::FindClose(hSearch);
 	RemoveDirectory(path);
+	return true;
 }
 //创建一个目录
 bool TraverseFolder::CreateFolder(LPCSTR path)
@@ -267,7 +268,9 @@ bool TraverseFolder::CreateFolder(LPCSTR path)
 			std::cout<<"the directory is already existing\n";
 		if(GetLastError() == ERROR_PATH_NOT_FOUND)
 			std::cout<<"one or more directory has not been found\n";
+		return false;
 	}
+	return true;
 }
 TraverseFolder::~TraverseFolder(void)
 {
