@@ -21,20 +21,30 @@ CalculateNum::CalculateNum(int NumYes,int NumNo)
 
 
 /******************** Now find a new way to realize this method********************************/
-void CalculateNum::DiscardRepeat(LPCSTR path,set<string>* str)
+
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::DiscardRepeat(LPCSTR path,set<string>* str)
+// 功能: 去除文本中的重复词汇
+//---------------------------------------------------------------------------------
+void CalculateNum::DiscardRepeat(LPCSTR path,set<string> &str)
 {
 	ifstream fin(path);
 	string strrp;
 	while( fin.good() )
 	{
 		fin>>strrp;
-		(*str).insert(strrp);
+		str.insert(strrp);
 	}
 	fin.close();
 }
 
-//初始化类值
-void CalculateNum::Init(LPCSTR path,ofstream& fout)
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::Init(LPCSTR path,ofstream& fout)
+// 功能: 加载包含多有文本分词后的词汇
+//---------------------------------------------------------------------------------
+void CalculateNum::Init(LPCSTR path,ofstream &fout)
 {
 	ifstream fin(path); //待去重复的词典
 	VT PerWord;		    //每个单词对应两个分类
@@ -55,7 +65,11 @@ void CalculateNum::Init(LPCSTR path,ofstream& fout)
 
 }
 
-// 计算出每个词汇的每个分类的CHI值
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::Calculate(LPCSTR path0,LPCSTR path1)
+// 功能: 计算每个词汇的两种类别的Ai，Bi，Ci，Di
+//---------------------------------------------------------------------------------
 void CalculateNum::Calculate(LPCSTR path0,LPCSTR path1)
 {
 	WIN32_FIND_DATA findData;
@@ -83,7 +97,7 @@ void CalculateNum::Calculate(LPCSTR path0,LPCSTR path1)
 			continue;
 		}
 		sprintf(FullPathName,"%s\\%s",path0,findData.cFileName);
-		DiscardRepeat(FullPathName,&Setstr);//去掉文本的重复词汇
+		DiscardRepeat(FullPathName,Setstr);//去掉文本的重复词汇
 		
 		NumFiles0++;
 		for(iter=Setstr.begin();iter!=Setstr.end();iter++)
@@ -109,7 +123,7 @@ void CalculateNum::Calculate(LPCSTR path0,LPCSTR path1)
 			continue;
 		}
 		sprintf(FullPathName,"%s\\%s",path1,findData.cFileName);
-		DiscardRepeat(FullPathName,&Setstr);//去掉文本的重复词汇
+		DiscardRepeat(FullPathName,Setstr);//去掉文本的重复词汇
 		
 		NumFiles1++;
 		for(iter=Setstr.begin();iter!=Setstr.end();iter++)
@@ -137,9 +151,14 @@ void CalculateNum::Calculate(LPCSTR path0,LPCSTR path1)
 	}
 }
 
-/*获取每个词汇的CHI值,CHI值得计算公式为：
-CHI = Nall*(Ai*Di - Bi*Ci)*(Ai*Di - Bi*Ci)/[(Ai+Bi)(Ci+Di)(Ai+Ci)(Bi+Di)]
-其中Nall，Ai+Ci，Bi+Di 在分类为2时为定值，所以这里不去管常数*/
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::GetCHI(ABCD abcd)
+// 功能: 计算每个词汇的CHI值
+// 附注：获取每个词汇的CHI值,CHI值得计算公式为：
+//		 CHI = Nall*(Ai*Di - Bi*Ci)*(Ai*Di - Bi*Ci)/[(Ai+Bi)(Ci+Di)(Ai+Ci)(Bi+Di)]
+//		 其中Nall，Ai+Ci，Bi+Di 在分类为2时为定值，所以这里不去管常数.
+//---------------------------------------------------------------------------------
 double CalculateNum::GetCHI(ABCD abcd)
 {
 	double Ai = abcd.Ai;
@@ -160,7 +179,12 @@ double CalculateNum::GetCHI(ABCD abcd)
 	temp/=(Bi + Di);
 	return temp;
 }
-//对CHI进行排序，截断降维
+
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::SortDecn(ofstream * fout)
+// 功能: 对词汇的CHI值进行降序排列
+//---------------------------------------------------------------------------------
 void CalculateNum::SortDecn(ofstream * fout)
 {
 	vector<strChi> Vstr;
@@ -201,6 +225,12 @@ void CalculateNum::SortDecn(ofstream * fout)
 		//(*fout)<<Vstr[k].str<<endl;
 	}
 }
+
+
+//---------------------------------------------------------------------------------
+// 名字: CalculateNum::QuickSort(vector<strChi>& vec,int left,int right)
+// 功能: 针对strChi结构体类型的元素的快速排序算法
+//---------------------------------------------------------------------------------
 void CalculateNum::QuickSort(vector<strChi>& vec,int left,int right)
 {
 	int i,j;

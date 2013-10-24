@@ -144,6 +144,8 @@ void SeparateTerm::BatchSeparate(LPCSTR pSource,LPCSTR pDest)
 		cout<<"Search File Failed\n";
 		return;
 	}
+
+
 	while(::FindNextFile(hError,&findData))
 	{
 		if(strcmp(findData.cFileName,".") ==0||strcmp(findData.cFileName,"..") ==0)
@@ -219,6 +221,8 @@ void SeparateTerm::BatchClearWord(LPCSTR pSource,LPCSTR pDest )
  
 
 }
+
+
 //析构实现分析系统的正常退出
 SeparateTerm::~SeparateTerm(void)
 {

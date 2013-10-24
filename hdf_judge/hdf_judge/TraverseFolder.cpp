@@ -15,8 +15,13 @@ TraverseFolder::TraverseFolder(string strDirect)
 {
 	m_strDir = strDirect;
 }
-// 以文件流的方式，适合多个文件夹里面东西写到一个txt中
-bool TraverseFolder::DirectList(LPCSTR path,ofstream* pfout)
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::DirectList(LPCSTR path1,LPCSTR path2)
+// 功能: 读取一个文件夹中的所有文本并写入一个文件流中，适合读取多个文件夹
+//---------------------------------------------------------------------------------
+bool TraverseFolder::DirectList(LPCSTR path,ofstream &pfout)
 {
 	WIN32_FIND_DATA FindData;
 	HANDLE hError;
@@ -45,7 +50,7 @@ bool TraverseFolder::DirectList(LPCSTR path,ofstream* pfout)
 		//cout<<nNumFiles<<":"<<FullPathName<<endl;
 
 		ifstream fin(FullPathName);
-		(*pfout)<<fin.rdbuf()<<" ";//空格必须添加，以保证分开不同的文档
+		pfout<<fin.rdbuf()<<" ";//空格必须添加，以保证分开不同的文档
 		fin.close();
 		
 		if (FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
@@ -58,7 +63,12 @@ bool TraverseFolder::DirectList(LPCSTR path,ofstream* pfout)
 	std::cout<<"All the "<<nNumFiles<<" file has been loaded in one txt\n";
 	return true;
 }
-// 适合只写一个文件夹中txt类文件到一个txt中
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::DirectList(LPCSTR path1,LPCSTR path2)
+// 功能: 读取一个文件夹中的所有文本并写入到同一个文本中，适合读取一个文件夹
+//---------------------------------------------------------------------------------
 bool TraverseFolder::DirectList(LPCSTR path1,LPCSTR path2)
 {
 	WIN32_FIND_DATA findData;
@@ -67,8 +77,8 @@ bool TraverseFolder::DirectList(LPCSTR path1,LPCSTR path2)
 	ofstream fout(path2);
 	int nNumFiles = 0;
 
-	char FilePathName[MAX_PATH] = " ";
-	char FullPathName[MAX_PATH] = " ";
+	char FilePathName[MAX_PATH] = "";
+	char FullPathName[MAX_PATH] = "";
 	strcpy(FilePathName,path1);
 	strcat(FilePathName,"\\*.*");
 	hError = FindFirstFile(FilePathName,&findData);
@@ -96,8 +106,13 @@ bool TraverseFolder::DirectList(LPCSTR path1,LPCSTR path2)
 	std::cout<<"All the "<<nNumFiles<<" file has been loaded in one txt\n";
 	return true;
 }
-//the following is some functions to opearte the file
-//复制一个文件到另外一个文件夹中，且文件名字不变
+
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::CutfileTofolder(LPCSTR path1,LPCSTR path2)
+// 功能: 把一个文件复制到另一个文件夹中
+//---------------------------------------------------------------------------------
 bool TraverseFolder::CopyfileTofolder(LPCSTR path1,LPCSTR path2)
 {
 	char FullPathName[MAX_PATH] = "";
@@ -116,14 +131,18 @@ bool TraverseFolder::CopyfileTofolder(LPCSTR path1,LPCSTR path2)
 	return true;
 }
 
-// 复制一个文件夹中的文本文件到另一个文件加载中的文本文件
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::CopyfolderTofolder(LPCSTR path1,LPCSTR path2)
+// 功能: 把一个文件夹中的所有文件复制到另一个文件夹中
+//---------------------------------------------------------------------------------
 bool TraverseFolder::CopyfolderTofolder(LPCSTR path1,LPCSTR path2)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hSearch;
-	char FilePathName[MAX_PATH];
-	char FullPathName1[MAX_PATH];
-	char FullPathName2[MAX_PATH];
+	char FilePathName[MAX_PATH]  = "";
+	char FullPathName1[MAX_PATH] = "";
+	char FullPathName2[MAX_PATH] = "";
 
 	strcpy(FilePathName,path1);
 	strcat(FilePathName,"\\*.*");
@@ -149,7 +168,12 @@ bool TraverseFolder::CopyfolderTofolder(LPCSTR path1,LPCSTR path2)
 	::FindClose(hSearch);
 	return true;
 }
-//剪切一个文件到另一个文件夹
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::CutfileTofolder(LPCSTR path1,LPCSTR path2)
+// 功能: 把一个文件剪切到另一个文件夹中
+//---------------------------------------------------------------------------------
 bool TraverseFolder::CutfileTofolder(LPCSTR path1,LPCSTR path2)
 {
 	char FullPathName[MAX_PATH] = "";
@@ -175,14 +199,19 @@ bool TraverseFolder::CutfileTofolder(LPCSTR path1,LPCSTR path2)
 	}
 	
 }
-//剪切一个文件夹到另外一个文件夹
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::CutfolderTofolder(LPCSTR path1,LPCSTR path2)
+// 功能: 把一个文件夹中的所有文件剪切到另一个文件夹中
+//---------------------------------------------------------------------------------
 bool TraverseFolder::CutfolderTofolder(LPCSTR path1,LPCSTR path2)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hSearch;
-	char FilePathName[MAX_PATH];
-	char FullPathName1[MAX_PATH];
-	char FullPathName2[MAX_PATH];
+	char FilePathName[MAX_PATH]  = "";
+	char FullPathName1[MAX_PATH] = "";
+	char FullPathName2[MAX_PATH] = "";
 	strcpy(FilePathName,path1);
 	strcat(FilePathName,"\\*.*");
 
@@ -209,7 +238,12 @@ bool TraverseFolder::CutfolderTofolder(LPCSTR path1,LPCSTR path2)
 	::FindClose(hSearch);
 	return true;
 }
-//删除一个文件
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::DeleteFileone(LPCSTR path)
+// 功能: 删除一个文件
+//---------------------------------------------------------------------------------
 bool TraverseFolder::DeleteFileOne(LPCSTR path)
 {
 	if( DeleteFile(path) )
@@ -221,13 +255,18 @@ bool TraverseFolder::DeleteFileOne(LPCSTR path)
 		return false;
 	}
 }
-//删除一个目录
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::DeleteFolder(LPCSTR path)
+// 功能: 删除一个文件目录
+//---------------------------------------------------------------------------------
 bool TraverseFolder::DeleteFolder(LPCSTR path)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hSearch;
-	char FilePathName[MAX_PATH];
-	char FullPathName[MAX_PATH];
+	char FilePathName[MAX_PATH] = "";
+	char FullPathName[MAX_PATH] = "";
 
 	strcpy(FilePathName,path);
 	strcat(FilePathName,"\\*.*");
@@ -257,7 +296,12 @@ bool TraverseFolder::DeleteFolder(LPCSTR path)
 	RemoveDirectory(path);
 	return true;
 }
-//创建一个目录
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::CreateFolder(LPCSTR path)
+// 功能: 创建一个文件目录
+//---------------------------------------------------------------------------------
 bool TraverseFolder::CreateFolder(LPCSTR path)
 {
 	if( CreateDirectory(path,NULL) )
@@ -271,6 +315,49 @@ bool TraverseFolder::CreateFolder(LPCSTR path)
 		return false;
 	}
 	return true;
+}
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::ClearFolder(LPCSTR path)
+// 功能: 清空一个文件夹中的所有文件
+//---------------------------------------------------------------------------------
+bool TraverseFolder::ClearFolder(LPCSTR path)
+{
+	WIN32_FIND_DATA findData;
+	HANDLE hError = NULL;
+	char FilePathName[MAX_PATH] = "";
+	char FullPathName[MAX_PATH] = "";
+
+	strcpy(FilePathName,path);
+	strcat(FilePathName,"\\*.*");
+
+	hError = FindFirstFile(FilePathName,&findData);
+	if( hError == INVALID_HANDLE_VALUE )
+	{
+		std::cout<<"Find file failed"<<std::endl;
+		return false;
+	}
+
+	while( ::FindNextFile(hError,&findData))
+	{
+		if( strcmp(findData.cFileName,".")==0 || strcmp(findData.cFileName,"..")==0)
+			continue;
+		sprintf(FullPathName,"%s\\%s",path,findData.cFileName);
+		
+		if( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
+		{
+			ClearFolder(FullPathName);
+			RemoveDirectory(FullPathName);
+		}
+		else
+		{
+			DeleteFile(FullPathName);
+		}
+	}
+	::FindClose(hError);
+	return true;
+	
 }
 TraverseFolder::~TraverseFolder(void)
 {

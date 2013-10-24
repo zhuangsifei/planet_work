@@ -17,8 +17,9 @@ class TraverseFolder
 public:
 	TraverseFolder(void);
 	TraverseFolder(string strDirect);
-	bool DirectList(LPCSTR path,ofstream* pfout);
+	bool DirectList(LPCSTR path,ofstream &pfout);
 	bool DirectList(LPCSTR path1,LPCSTR path2);
+	bool DirectOne(LPCSTR path,ofstream &pfout);
 	/*---------------the following is used for test-------------------*/
 	bool CreateFolder(LPCSTR);
 	bool CopyfileTofolder(LPCSTR path1,LPCSTR path2);
@@ -27,9 +28,29 @@ public:
 	bool CutfolderTofolder(LPCSTR path1,LPCSTR path2);
 	bool DeleteFileOne(LPCSTR path);
 	bool DeleteFolder(LPCSTR ppath);
+	bool ClearFolder(LPCSTR path);
 	/*---------------------------------------------------------------*/
 	~TraverseFolder(void);
 private:
 	string m_strDir;
 };
 
+
+
+//---------------------------------------------------------------------------------
+// 名字: TraverseFolder::DirectOne(LPCSTR path,ofstream &pfout)
+// 功能: 把一个文件复制到另一个文件夹中
+//---------------------------------------------------------------------------------
+inline bool TraverseFolder::DirectOne(LPCSTR path,ofstream &pfout)
+{
+	ifstream fin(path,ios::in);
+	if(!fin)
+	{
+		std::cout<<"File open failed"<<endl;
+		return false;
+	}
+	pfout<<fin.rdbuf()<<endl;
+	fin.close();
+	
+	return true;
+}

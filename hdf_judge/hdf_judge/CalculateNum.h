@@ -73,7 +73,7 @@ public:
 	double CHIGet(int ai,int bi,int ci,int di,int nall);
 	void sortCHI(vector<strChi>& vStr,int num,int nFilt);
 	// Now find a new way to solve this problem
-	void DiscardRepeat(LPCSTR path,set<string>* str);
+	void DiscardRepeat(LPCSTR path,set<string> &str);
 	void Calculate(LPCSTR path0,LPCSTR path1);
 	void Init(LPCSTR path,ofstream& fout);
 	void SortDecn(ofstream* fout);
