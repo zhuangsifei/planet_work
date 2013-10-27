@@ -21,7 +21,7 @@ public:
 	Characters(void);
 	Characters(LPCSTR path);
 	void CharY();
-	void CharZ(LPCSTR trainPath,ofstream* pfstr,int label);
+	void CharZ(LPCSTR trainPath,ofstream &pfstr,int label);
 	void SortFileWords(LPCSTR path,set<string>& strSet);
 	void KindofFile(LPCSTR path1,LPCSTR path2,LPCSTR pathRecord);
 	void KindtoMap(LPCSTR pathRecord,LPCSTR pathResult,map<string,int,bool (*)(string,string)>& KindMap);

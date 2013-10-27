@@ -38,8 +38,11 @@ void Characters::CharY()
 
 }
 
-//改进的bool算法，生成分词文本的特征向量并写入到同一个文本中
-void Characters::CharZ(LPCSTR trainPath,ofstream* pfstr,int label)
+//---------------------------------------------------------------------------------
+// 名字: Characters::CharZ(LPCSTR trainPath,ofstream &pfstr,int label)
+// 功能: 计算分词样本的特征向量并写进一个文本，label标注类别
+//---------------------------------------------------------------------------------
+void Characters::CharZ(LPCSTR trainPath,ofstream &pfstr,int label)
 {
 	WIN32_FIND_DATA findData;
 	HANDLE hSearch;
@@ -67,25 +70,29 @@ void Characters::CharZ(LPCSTR trainPath,ofstream* pfstr,int label)
 		set<string>::iterator iter;
 		map<string,int>::iterator pter;
 		string strf;
-		(*pfstr)<<label<<" ";
+		pfstr<<label<<" ";
 		for(iter=strSet.begin();iter!=strSet.end();iter++)
 		{
 			pter = m_DicMap.find(*iter);
 			if(pter != m_DicMap.end() )
 			{
-				(*pfstr)<<pter->second<<":"<<1<<" ";
+				pfstr<<pter->second<<":"<<1<<" ";
 			}
 			else
 			{
 				//(*pfstr)<<pter->second<<":"<<0<<" ";
 			}
 		}
-		(*pfstr)<<endl;	
+		pfstr<<endl;	
 	}
 	::FindClose(hSearch);
 }
 
-//将一个文本中的分词词汇写到 set中
+
+//---------------------------------------------------------------------------------
+// 名字: Characters::SortFileWords(LPCSTR path,set<string>& strSet)
+// 功能: 将一个分词样本中词汇写进一个set中
+//---------------------------------------------------------------------------------
 void Characters::SortFileWords(LPCSTR path,set<string>& strSet)
 {
 	ifstream fin(path);

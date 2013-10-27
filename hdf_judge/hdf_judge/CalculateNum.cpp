@@ -224,6 +224,7 @@ void CalculateNum::SortDecn(ofstream * fout)
 		(*fout)<<Vstr[k].str<<"  "<<Vstr[k].dbChi<<endl;
 		//(*fout)<<Vstr[k].str<<endl;
 	}
+	(*fout).close();
 }
 
 
