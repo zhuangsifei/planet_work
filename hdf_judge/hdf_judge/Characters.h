@@ -22,9 +22,11 @@ public:
 	Characters(LPCSTR path);
 	void CharY();
 	void CharZ(LPCSTR trainPath,ofstream &pfstr,int label);
+	void CharZ(LPCSTR testPath,ofstream &pfstr);
 	void SortFileWords(LPCSTR path,set<string>& strSet);
 	void KindofFile(LPCSTR path1,LPCSTR path2,LPCSTR pathRecord);
 	void KindtoMap(LPCSTR pathRecord,LPCSTR pathResult,map<string,int,bool (*)(string,string)>& KindMap);
+	void KindofFile(LPCSTR pSource,LPCSTR pathRecord);
 	static bool LessComp(string str1,string str2);
 	~Characters(void);
 private:

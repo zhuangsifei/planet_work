@@ -1,5 +1,10 @@
 #include "QtConnectMysql.h"
 
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::QtConnnectMysql
+// 功能: 连接默认数据库
+//---------------------------------------------------------------------------------
 QtConnectMysql::QtConnectMysql(void)
 {
 	m_SQL	   = "QMYSQL";
@@ -13,6 +18,21 @@ QtConnectMysql::QtConnectMysql(void)
 	m_UserName = "root";
 	m_PassWord = "rwxddd";
 	m_DataBase = "planet";
+}
+
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::QtConnnectMysql
+// 功能: 连接指定数据库
+//---------------------------------------------------------------------------------
+QtConnectMysql::QtConnectMysql(QString dataBase)
+{
+	m_SQL	   = "QMYSQL";
+	m_HostName = "localhost";
+	m_Port     = 3306;
+	m_UserName = "root";
+	m_PassWord = "rwxddd";
+	m_DataBase = dataBase;
 }
 
 QSqlDatabase QtConnectMysql::getDataDase() const
@@ -246,14 +266,14 @@ bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QS
 
 //---------------------------------------------------------------------------------
 // 名字: QtConnectMysql::UpdateRecord
-// 功能: 将最终的判断结果写入表格中
+// 功能: 将最终的结果写在表格里面，因测试数据表格差异，所以此函数要依据最后而定
 //---------------------------------------------------------------------------------
 bool QtConnectMysql::UpdateRecord(QSqlDatabase db,QString table,map<string,int,bool (*)(string,string)> KindMap)
 {
 
 	QSqlTableModel qTable(0,db);
 	qTable.setTable(table);
-	qTable.setFilter("topic_id>0");
+	//qTable.setFilter("kind = 0");
 	qTable.select();
 
 	int num = qTable.rowCount();
@@ -267,7 +287,7 @@ bool QtConnectMysql::UpdateRecord(QSqlDatabase db,QString table,map<string,int,b
 		QSqlRecord record = qTable.record(i);
 		val_test = iter->second;
 		iter++;
-		record.setValue("kind_test",val_test);
+		record.setValue("kind",val_test);
 		qTable.setRecord(i,record);
 	}
 	if(qTable.submitAll())
@@ -280,6 +300,44 @@ bool QtConnectMysql::UpdateRecord(QSqlDatabase db,QString table,map<string,int,b
 		std::cout<<"修改不成功"<<endl;
 		return false;
 	}
+}
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::LoadRecordForPredict
+// 功能: 从数据库读取N条记录写进文本，一个记录一个文本；由于预测和训练数据不在一个
+//		 表格，所以这里要重写加载记录函数，最终要整合两个函数的		 
+//---------------------------------------------------------------------------------
+bool QtConnectMysql::LoadRecordForPredict(QSqlQuery query,QString pDest,int nNum )
+{
+	QTextCodec *code = QTextCodec::codecForName("UTF-8");
+	QString path = "";
+	QString Qstr = "";
+	int fnameNum = query.record().indexOf("id");
+	int fieldNum = query.record().indexOf("text");
+
+	if (nNum == 0)
+		nNum = query.size();
+	int i=0;
+	while(query.next() && (i++<nNum) )
+	{
+		path = query.value(fnameNum).toString();
+		Qstr = query.value(fieldNum).toString();
+		path += ".txt";
+		path = pDest + "\\" + path;
+
+		QFile file(path);
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			qDebug()<<"open file failed\n";
+			return false;
+		}
+		QTextStream out(&file);
+		out.setCodec(code);		//set code format
+		out<<Qstr<<endl;
+		file.close();
+	}
+
+	return true;
 }
 QtConnectMysql::~QtConnectMysql(void)
 {

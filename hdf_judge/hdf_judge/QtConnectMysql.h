@@ -16,6 +16,7 @@ class QtConnectMysql
 {
 public:
 	QtConnectMysql(void);
+	QtConnectMysql(QString dataBase);
 	QSqlDatabase getDataDase() const;
 	void ShowDriver();
 	void TestData();
@@ -27,6 +28,7 @@ public:
 
 	bool LoadRecordInfile(QSqlQuery query,QString pDest,int nNum = 0);
 	bool LoadMarkedRecordInfile(QSqlQuery query,QString pDest,int nMarked);
+	bool LoadRecordForPredict(QSqlQuery query,QString pDest,int nNum = 0);
 	~QtConnectMysql(void);
 private:
 	QString	m_HostName;
