@@ -27,6 +27,7 @@ public:
 	void KindofFile(LPCSTR path1,LPCSTR path2,LPCSTR pathRecord);
 	void KindtoMap(LPCSTR pathRecord,LPCSTR pathResult,map<string,int,bool (*)(string,string)>& KindMap);
 	void KindofFile(LPCSTR pSource,LPCSTR pathRecord);
+	void ProduceRecordFile(LPCSTR pID,LPCSTR pGoal,LPCSTR pUpdate);
 	static bool LessComp(string str1,string str2);
 	~Characters(void);
 private:

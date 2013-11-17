@@ -37,6 +37,12 @@
     <ClCompile Include="FindBad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Markup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SeparateTerm.h">
@@ -60,6 +66,12 @@
     <ClInclude Include="define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Markup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="zThanks.txt">
@@ -77,10 +89,13 @@
     <None Include="zYishuBad.txt">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="AllWords.txt">
+    <None Include="ReadMe.txt">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="ReadMe.txt">
+    <None Include="zAllWords.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="app.config">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

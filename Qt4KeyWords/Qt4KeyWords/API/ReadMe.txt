@@ -1,0 +1,1 @@
+API 文档中除了zmerge.txt,zmergeadd.txt,zmergefix.txt外都是与的分词有关的核心文件，这三个文件是与额外添加的词典有关的，经过大量手工加工处理，放在这里只是为了保护他们的安全

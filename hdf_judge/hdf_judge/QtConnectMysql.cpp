@@ -1,23 +1,32 @@
 #include "QtConnectMysql.h"
-
-
+#include "AppConfig.h"
+#include "Markup.h"
+extern AppConfig appConfig;
 //---------------------------------------------------------------------------------
 // 名字: QtConnectMysql::QtConnnectMysql
 // 功能: 连接默认数据库
 //---------------------------------------------------------------------------------
 QtConnectMysql::QtConnectMysql(void)
 {
-	m_SQL	   = "QMYSQL";
-	/*m_HostName = "192.168.3.62";
+	/*m_SQL	   = "QMYSQL";
+	m_HostName = "192.168.3.62";
 	m_Port	   = 3306;
 	m_UserName = "root";
 	m_PassWord ="dev";
 	m_DataBase ="planet";*/
-	m_HostName = "localhost";
+
+	/*m_HostName = "localhost";
 	m_Port     = 3306;
 	m_UserName = "root";
 	m_PassWord = "rwxddd";
-	m_DataBase = "planet";
+	m_DataBase = "planet";*/
+	m_SQL		= QString::fromStdString( appConfig.GetString(TEXT("m_SQL")) );
+	m_HostName  = QString::fromStdString( appConfig.GetString(TEXT("m_HostName")) );
+	m_Port		= appConfig.GetInt(TEXT("m_Port") );
+	m_UserName	= QString::fromStdString( appConfig.GetString(TEXT("m_UserName")) );
+	m_PassWord	= QString::fromStdString( appConfig.GetString(TEXT("m_PassWord")) );
+	m_DataBase	= QString::fromStdString( appConfig.GetString(TEXT("m_DataBase")) );
+
 }
 
 
@@ -27,14 +36,32 @@ QtConnectMysql::QtConnectMysql(void)
 //---------------------------------------------------------------------------------
 QtConnectMysql::QtConnectMysql(QString dataBase)
 {
-	m_SQL	   = "QMYSQL";
+	/*m_SQL	   = "QMYSQL";
 	m_HostName = "localhost";
 	m_Port     = 3306;
 	m_UserName = "root";
-	m_PassWord = "rwxddd";
-	m_DataBase = dataBase;
+	m_PassWord = "rwxddd";*/
+	m_SQL		= QString::fromStdString( appConfig.GetString(TEXT("m_SQL")) );
+	m_HostName  = QString::fromStdString( appConfig.GetString(TEXT("m_HostName")) );
+	m_Port		= appConfig.GetInt(TEXT("m_Port") );
+	m_UserName	= QString::fromStdString( appConfig.GetString(TEXT("m_UserName")) );
+	m_PassWord	= QString::fromStdString( appConfig.GetString(TEXT("m_PassWord")) );
+	m_DataBase  = dataBase;
 }
 
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::QtConnnectMysql
+// 功能: 连接指定主机，端口，制定数据库，需要帐号，密码
+//---------------------------------------------------------------------------------
+QtConnectMysql::QtConnectMysql(QString hostName,QString dataBase,QString userName,QString userPass,int nPort)
+{
+	m_SQL	   = "QMYSQL";
+	m_HostName = hostName;
+	m_Port     = nPort;
+	m_UserName = userName;
+	m_PassWord = userPass;
+	m_DataBase = dataBase;
+}
 QSqlDatabase QtConnectMysql::getDataDase() const
 {
 	return m_db;
@@ -172,7 +199,11 @@ bool QtConnectMysql::LoadMarkedRecordInfile(QSqlQuery query,QString pDest,int nM
 
 	return true;
 }
-//this function load all the texts in one folder,every record use one .txt file
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::LoadRecordInfile
+// 功能: 把已经分开的文本，分别下载到两个独立的文件夹中
+//---------------------------------------------------------------------------------
 bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QString path1,QString path2)
 {
 	
@@ -213,60 +244,55 @@ bool QtConnectMysql::LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QS
 	}
 	return true;
 }
+bool QtConnectMysql::LoadFixedRecordInfile(QSqlQuery query,QString pDest,int nNum )
+{
+	QTextCodec *code = QTextCodec::codecForName("UTF-8");
+	QString path = "";
+	QString Qstr = "";
+	int fnameNum = query.record().indexOf("id");
+	int fieldNum = query.record().indexOf("content_text");
+	int effectNum = query.record().indexOf("effect");
+	int mannerNum = query.record().indexOf("manner");
 
-//void QtConnectMysql::UseTableModify(QSqlDatabase db,QString table,FindKey &FindWords,LPCSTR upath1,LPCSTR spath2)
-//{
-//	QTextCodec *code = QTextCodec::codecForName("utf8");
-//	QString Qstr = " ";
-//	QString upath = upath1;
-//	QSqlTableModel qTable(0,db);
-//	qTable.setTable(table);
-//	qTable.setFilter("topic_id>0");
-//	qTable.select();
-//	int num = qTable.rowCount();
-//	for(int i=0;i<num;i++)
-//	{
-//		QSqlRecord record = qTable.record(i);
-//		//QFile sfile(upath1);
-//		QFile sfile(upath);
-//		if(!sfile.open(QIODevice::WriteOnly |QIODevice::Text))
-//		{
-//			qDebug()<<"Open file failed\n";
-//			return ;
-//		}
-//		QTextStream sout(&sfile);
-//		sout.setCodec(code);
-//		Qstr = record.value("text").toString();
-//		sout<<Qstr<<endl;
-//		FindWords.SingleSeparateWords(upath1,spath2);
-//		map<string,int> MapStr;
-//		int nResult;
-//		FindWords.ClearWords(spath2,MapStr);
-//		//this is the first method to get the result
-//		/*nResult = FindWords.SingleResult1(MapStr);*/
-//
-//		//this is the second method to get the result
-//		nResult = FindWords.SingleResult2(MapStr);
-//
-//		record.setValue("kind",nResult);
-//		qTable.setRecord(i,record);
-//		sfile.close();
-//	}
-//	if(qTable.submitAll())
-//	{
-//		std::cout<<"修改成功"<<endl;
-//		//return true;
-//	}
-//	else
-//	{
-//		std::cout<<"修改不成功"<<endl;
-//		//return false;
-//	}
-//}
+	if (nNum == 0)
+		nNum = query.size();
+	int i=0;
+	while(query.next() && (i++<nNum) )
+	{
+		path = query.value(fnameNum).toString();
+		Qstr = query.value(fieldNum).toString();
+		path += ".txt";
+		path = pDest + "\\" + path;
+
+		QFile file(path);
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			qDebug()<<"open file failed\n";
+			return false;
+		}
+		QTextStream out(&file);
+		out.setCodec(code);		//set code format
+		out<<Qstr<<endl;
+		Qstr = query.value(effectNum).toString();
+		if (Qstr == "")
+			Qstr = "空";
+		Qstr = "效果为" + Qstr;
+		out<<Qstr<<endl;
+
+		Qstr = query.value(mannerNum).toString();
+		if (Qstr == "")
+			Qstr = "空";
+		Qstr = "举止为" + Qstr;
+		out<<Qstr<<endl;
+		file.close();
+	}
+
+	return true;
+}
 
 //---------------------------------------------------------------------------------
 // 名字: QtConnectMysql::UpdateRecord
-// 功能: 将最终的结果写在表格里面，因测试数据表格差异，所以此函数要依据最后而定
+// 功能: 将最终的结果写在表格里面，这个方法已经有新的方法取代
 //---------------------------------------------------------------------------------
 bool QtConnectMysql::UpdateRecord(QSqlDatabase db,QString table,map<string,int,bool (*)(string,string)> KindMap)
 {
@@ -318,7 +344,8 @@ bool QtConnectMysql::LoadRecordForPredict(QSqlQuery query,QString pDest,int nNum
 	if (nNum == 0)
 		nNum = query.size();
 	int i=0;
-	while(query.next() && (i++<nNum) )
+	//while(query.next() && (i++<nNum) )
+	while(query.next() && (i++<10000) )
 	{
 		path = query.value(fnameNum).toString();
 		Qstr = query.value(fieldNum).toString();
@@ -339,9 +366,30 @@ bool QtConnectMysql::LoadRecordForPredict(QSqlQuery query,QString pDest,int nNum
 
 	return true;
 }
+
+//---------------------------------------------------------------------------------
+// 名字: QtConnectMysql::UpdateRecord(const char *pUpdate,QSqlQuery &query)
+// 功能: 将所得的结果从文本加载到新建的表中，同时更新hdf_status以及新建表格 
+//---------------------------------------------------------------------------------
+bool QtConnectMysql::UpdateRecord(const char *pUpdate,QSqlQuery &query)
+{
+	query.exec("create table duan.judge ( id bigint(20) unsigned not null,kind smallint(6) not null,primary key(id) )");
+		
+	/*query.exec("load data local infile 'C:/Users/duan/Desktop/hdf_judge/hdf_judge/zzxxzzmap.txt' replace into table \
+			duan.judge fields  terminated by '  ' lines terminated by '\r\n'");*/
+	query.exec("load data local infile './zzxxzzmap.txt' replace into table duan.judge fields  terminated \
+				by '  ' lines terminated by '\r\n'");
+
+	query.exec("update planet.hdf_status,duan.judge set planet.hdf_status.kind = duan.judge.kind \
+				where planet.hdf_status.id = duan.judge.id");
+
+	query.exec("drop table duan.judge"); 
+	return true;
+}
 QtConnectMysql::~QtConnectMysql(void)
 {
 	m_db.close();
 }
+
 
 

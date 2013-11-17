@@ -9,7 +9,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <Windows.h>
 using namespace std;
 
 class QtConnectMysql
@@ -17,18 +16,21 @@ class QtConnectMysql
 public:
 	QtConnectMysql(void);
 	QtConnectMysql(QString dataBase);
+	QtConnectMysql(QString hostName,QString dataBase,QString userName,QString userPass,int port);
 	QSqlDatabase getDataDase() const;
 	void ShowDriver();
 	void TestData();
 	bool Connect();
-
+public:		//old
 	bool LoadRecordInfile(QSqlQuery query,QString Id1,QString Id2,QString path1,QString path2);
-	//void UseTableModify(QSqlDatabase db,QString table,FindKey &FindWords,LPCSTR upath1,LPCSTR spath2);
 	bool UpdateRecord(QSqlDatabase db,QString table,map<string,int,bool (*)(string,string)> KindMap);
-
+public:     
 	bool LoadRecordInfile(QSqlQuery query,QString pDest,int nNum = 0);
 	bool LoadMarkedRecordInfile(QSqlQuery query,QString pDest,int nMarked);
 	bool LoadRecordForPredict(QSqlQuery query,QString pDest,int nNum = 0);
+public:
+	bool LoadFixedRecordInfile(QSqlQuery query,QString pDest,int nNum = 0);
+	bool UpdateRecord(const char *pUpdate,QSqlQuery &query);
 	~QtConnectMysql(void);
 private:
 	QString	m_HostName;

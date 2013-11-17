@@ -297,6 +297,11 @@ void Characters::KindtoMap(LPCSTR pathRecord,LPCSTR pathResult,map<string,int,bo
 	fgoal.close();
 
 }
+
+//---------------------------------------------------------------------------------
+// 名字: Characters::LessComp(string str1,string str2)
+// 功能: 字符串比较函数，用于构造map时使用
+//---------------------------------------------------------------------------------
 bool Characters::LessComp(string str1,string str2)
 {
 	int L1,L2;
@@ -313,6 +318,31 @@ bool Characters::LessComp(string str1,string str2)
 		else 
 			return false;
 	}
+	return true;
+}
+
+//---------------------------------------------------------------------------------
+// 名字: Characters::ProduceRecordFile(LPCSTR pID,LPCSTR pGoal,LPCSTR pUpdate)
+// 功能: 将ID和分类结果对应起来，并写进一个txt文件里面
+//---------------------------------------------------------------------------------
+void Characters::ProduceRecordFile(LPCSTR pID,LPCSTR pGoal,LPCSTR pUpdate)
+{
+	ifstream fin(pID);
+	ifstream fgoal(pGoal);
+	ofstream fout(pUpdate);
+
+	string str;
+	while(fin.good() && fgoal.good() )
+	{
+		fin>>str;
+		fout<<str<<"  ";
+		fgoal>>str;
+		fout<<str<<std::endl;
+		str.clear();
+	}
+	fin.close();
+	fgoal.close();
+	fout.close();
 }
 Characters::~Characters(void)
 {

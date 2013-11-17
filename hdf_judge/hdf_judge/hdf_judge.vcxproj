@@ -18,6 +18,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -78,26 +79,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="CalculateNum.cpp" />
     <ClCompile Include="Characters.cpp" />
     <ClCompile Include="FindBad.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Markup.cpp" />
     <ClCompile Include="QtConnectMysql.cpp" />
     <ClCompile Include="SeparateTerm.cpp" />
     <ClCompile Include="TraverseFolder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppConfig.h" />
     <ClInclude Include="CalculateNum.h" />
     <ClInclude Include="Characters.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="FindBad.h" />
+    <ClInclude Include="Markup.h" />
     <ClInclude Include="QtConnectMysql.h" />
     <ClInclude Include="SeparateTerm.h" />
     <ClInclude Include="TraverseFolder.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AllWords.txt" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="ReadMe.txt" />
+    <None Include="zAllWords.txt" />
     <None Include="zThanks.txt" />
     <None Include="zYideBad.txt" />
     <None Include="zYideGood.txt" />
