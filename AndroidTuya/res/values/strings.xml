@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AndroidTuya</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_choose">choose</string>
+    <string name="menu_clear">clear</string>
+    <string name="menu_save">save</string>
+    <string name="menu_pen">pen</string>
+
+</resources>
