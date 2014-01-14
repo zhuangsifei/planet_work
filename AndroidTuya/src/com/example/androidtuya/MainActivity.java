@@ -1,5 +1,6 @@
 package com.example.androidtuya;
 
+import net.margaritov.preference.colorpicker.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,18 +16,24 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity 
+	implements ColorPickerDialog.OnColorChangedListener
+{
 
 	final int SELECT_IMAGE = 1;
-	private MyView TouchView = null;
+	private MyView touchView = null;
+	private int mBaseColor;
+	private boolean mAlphaSliderEnabled = false;
+	private boolean mHexValueEnabled = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		TouchView = new MyView(MainActivity.this);
-		//setContentView(R.layout.activity_main);
-		setContentView(TouchView);
+		setContentView(R.layout.activity_main);
+		touchView = (MyView)findViewById(R.id.myView);
+		
 	}
 
 	@Override
@@ -36,7 +43,11 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	
+	@Override
+	public void onColorChanged(int color)
+	{
+		mBaseColor = color;
+	}
 	public boolean onOptionsItemSelected(MenuItem Item)
 	{
 		int item_id = Item.getItemId();
@@ -57,7 +68,7 @@ public class MainActivity extends Activity {
 					}
 					if(arg1 == 1)
 					{
-						
+						showDialog(null);
 					}
 				}
 			});
@@ -92,22 +103,19 @@ public class MainActivity extends Activity {
     					if(imgUri != null)
     					{
     						ContentResolver cr = this.getContentResolver();
-    						Cursor cursor = cr.query(imgUri, null, null, null, null);
+    						String[] columnStr = new String[]{MediaStore.Images.Media.DATA};
+    						Cursor cursor = cr.query(imgUri, columnStr, null, null, null);
     						if(cursor != null)
     						{
     							int nID = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
     							if(cursor.moveToFirst())
     							{
-    								String imgPath = cursor.getString(1);
-    								ImageView imageView = new ImageView(MainActivity.this);  
-    								imageView.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+    								String imgPath = cursor.getString(nID);
+    								Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+    								touchView.setBitmap(bitmap);
     							}
     						}
     					}
-//  					    BitmapFactory.Options bmpOption = new BitmapFactory.Options();
-//    					bmpOption.inJustDecodeBounds = true;
-//    					Bitmap bmp =BitmapFactory.decodeStream(cr.openInputStream(imgUri),
-//    							null,bmpOption );
     				}catch(Exception e)
     				{
     					e.printStackTrace();
@@ -120,5 +128,20 @@ public class MainActivity extends Activity {
     	}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
+	protected void showDialog(Bundle state) {
+		//ColorPickerDialog mDialog = new ColorPickerDialog(getContext(), mValue);
+		mBaseColor = Color.BLACK;
+		ColorPickerDialog dialog = new ColorPickerDialog(MainActivity.this,mBaseColor);
+		dialog.setOnColorChangedListener(MainActivity.this);
+		if (mAlphaSliderEnabled) {
+			dialog.setAlphaSliderVisible(true);
+		}
+		if (mHexValueEnabled) {
+			dialog.setHexValueEnabled(true);
+		}
+		if (state != null) {
+			dialog.onRestoreInstanceState(state);
+		}
+		dialog.show();
+	}
 }

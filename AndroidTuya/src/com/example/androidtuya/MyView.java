@@ -22,27 +22,25 @@ public class MyView extends View
 	float posX,posY;			// used as touched position
 	private final float TOUCH_TOLERANCE = 4;
 	
-	MyView(Context context,AttributeSet attr)
+	public MyView(Context context,AttributeSet attr,int defStyle)
+	{
+		super(context,attr,defStyle);
+		init();
+	}
+	public MyView(Context context,AttributeSet attr)
 	{
 		super(context,attr);
-		//mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sb4);
-		mPaint = new Paint();
-		mPaint.setAntiAlias(true);
-	    mPaint.setDither(true);
-	    mPaint.setColor(Color.RED);
-	    mPaint.setStyle(Paint.Style.STROKE);
-	    mPaint.setStrokeJoin(Paint.Join.ROUND);
-	    mPaint.setStrokeCap(Paint.Cap.ROUND);
-	    mPaint.setStrokeWidth(12);
-	    
-	    mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-	    mPath = new Path();
+		init();
 	}
 	
-	MyView(Context context)
+	public MyView(Context context)
 	{
 		super(context);
-		//mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sb4);
+		init();
+	}
+	
+	private void init()
+	{
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
 	    mPaint.setDither(true);
@@ -52,6 +50,7 @@ public class MyView extends View
 	    mPaint.setStrokeCap(Paint.Cap.ROUND);
 	    mPaint.setStrokeWidth(12);
 	    
+	    //mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sb4);
 	    mBitmapPaint = new Paint(Paint.DITHER_FLAG);
 	    mPath = new Path();
 	}
@@ -60,9 +59,7 @@ public class MyView extends View
 	protected void onSizeChanged(int w,int h,int oldw,int oldh)
 	{
 		super.onSizeChanged(w, h, oldw, oldh);
-        //mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sb4)
-				.copy(Bitmap.Config.ARGB_8888, true);
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
 	}
 	
@@ -72,6 +69,7 @@ public class MyView extends View
 		canvas.drawColor(0xFFAAAAAA);
 		canvas.drawBitmap(mBitmap,0,0,mBitmapPaint);
 		canvas.drawPath(mPath, mPaint);	
+		boolean  bpath = mPath.isEmpty();
 		canvas.drawRect(10,10,100,100,mPaint);
 	}
 	
@@ -84,7 +82,7 @@ public class MyView extends View
 		switch(event.getAction())
 		{
 			case MotionEvent.ACTION_DOWN:
-				mPath.reset();
+				//mPath.reset();
 				mPath.moveTo(x, y);
 				posX = x;
 				posY = y;
@@ -105,12 +103,18 @@ public class MyView extends View
 			case MotionEvent.ACTION_UP:
 				mPath.lineTo(posX, posY);
 				// avoid the previous line is cleared when press again
-				mCanvas.drawPath(mPath,mPaint); 
-				mPath.reset();
+				//mCanvas.drawPath(mPath,mPaint); 
+				//mPath.reset();
 				postInvalidate();
 				break;
 		}
 		//return super.onTouchEvent(event);
 		return true;
+	}
+	
+	public void setBitmap(Bitmap bitmap)
+	{
+		mBitmap = bitmap;
+		mCanvas = new Canvas(mBitmap);
 	}
 }

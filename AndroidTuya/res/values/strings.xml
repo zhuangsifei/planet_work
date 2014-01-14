@@ -8,5 +8,8 @@
     <string name="menu_clear">clear</string>
     <string name="menu_save">save</string>
     <string name="menu_pen">pen</string>
+    
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="press_color_to_apply">Press on Color to apply</string>  
 
 </resources>
